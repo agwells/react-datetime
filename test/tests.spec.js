@@ -1,13 +1,15 @@
-/* global it, xit, describe, expect, jasmine, done, jest */
+/* global it, describe, expect, jasmine, done, jest, beforeEach, afterAll */
 
 import React from 'react'; // eslint-disable-line no-unused-vars
-import moment from 'moment';
-import _momentTimezone from 'moment-timezone'; // eslint-disable-line no-unused-vars
+import moment from 'moment-timezone';
 import utils from './testUtils';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 
 Enzyme.configure({ adapter: new Adapter() });
+
+beforeEach(() => moment.tz.setDefault('Etc/UTC'));
+afterAll(() => moment.tz.setDefault());
 
 describe('Datetime', () => {
 	it('create component', () => {
@@ -19,8 +21,8 @@ describe('Datetime', () => {
 	});
 
 	it('viewMode=days: renders days, week days, month, year', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
-			component = utils.createDatetime({ viewMode: 'days', defaultValue: date });
+		const date = new Date('2000-01-15T02:02:02.002Z');
+		const component = utils.createDatetime({ viewMode: 'days', defaultValue: date });
 		utils.openDatepicker(component);
 
 		// Month and year
@@ -66,7 +68,8 @@ describe('Datetime', () => {
 
 	it('persistent valid months going monthView->yearView->monthView', () => {
 		const dateBefore = '2018-06-01';
-		const component = utils.createDatetime({ viewMode: 'months', isValidDate: (current) =>
+		const date = new Date('2018-01-01T00:00:00Z');
+		const component = utils.createDatetime({ viewMode: 'months', defaultValue: date, isValidDate: (current) =>
 				current.isBefore(moment(dateBefore, 'YYYY-MM-DD'))
 			});
 
@@ -111,8 +114,8 @@ describe('Datetime', () => {
 	});
 
 	it('selectYear', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
-			component = utils.createDatetime({ viewMode: 'years', defaultValue: date });
+		const date = new Date('2000-01-15T02:02:02.002Z');
+		const component = utils.createDatetime({ viewMode: 'years', defaultValue: date });
 		expect(utils.isYearView(component)).toBeTruthy();
 		expect(component.find('.rdtSwitch').text()).toEqual('2000-2009');
 
@@ -123,8 +126,8 @@ describe('Datetime', () => {
 	});
 
 	it('increase decade', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
-			component = utils.createDatetime({ viewMode: 'years', defaultValue: date });
+		const date = new Date('2000-01-15T02:02:02.002Z');
+		const component = utils.createDatetime({ viewMode: 'years', defaultValue: date });
 
 		expect(component.find('.rdtSwitch').text()).toEqual('2000-2009');
 		utils.clickOnElement(component.find('.rdtNext span').at(0));
@@ -134,8 +137,8 @@ describe('Datetime', () => {
 	});
 
 	it('decrease decade', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
-			component = utils.createDatetime({ viewMode: 'years', defaultValue: date });
+		const date = new Date('2000-01-15T02:02:02.002Z');
+		const component = utils.createDatetime({ viewMode: 'years', defaultValue: date });
 
 		expect(component.find('.rdtSwitch').text()).toEqual('2000-2009');
 		utils.clickOnElement(component.find('.rdtPrev span').at(0));
@@ -145,7 +148,7 @@ describe('Datetime', () => {
 	});
 
 	it('select month', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+		const date = new Date('2000-01-15T02:02:02.002Z'),
 			component = utils.createDatetime({ viewMode: 'months', defaultValue: date });
 
 		expect(utils.isMonthView(component)).toBeTruthy();
@@ -157,7 +160,7 @@ describe('Datetime', () => {
 	});
 
 	it('increase year', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+		const date = new Date('2000-01-15T02:02:02.002Z'),
 			component = utils.createDatetime({ viewMode: 'months', defaultValue: date });
 
 		expect(component.find('.rdtSwitch').text()).toEqual('2000');
@@ -168,7 +171,7 @@ describe('Datetime', () => {
 	});
 
 	it('decrease year', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+		const date = new Date('2000-01-15T02:02:02.002Z'),
 			component = utils.createDatetime({ viewMode: 'months', defaultValue: date });
 
 		expect(component.find('.rdtSwitch').text()).toEqual('2000');
@@ -179,7 +182,7 @@ describe('Datetime', () => {
 	});
 
 	it('increase month', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+		const date = new Date('2000-01-15T02:02:02.002Z'),
 			component = utils.createDatetime({ defaultValue: date });
 
 		expect(component.find('.rdtSwitch').text()).toEqual('January 2000');
@@ -193,7 +196,7 @@ describe('Datetime', () => {
 	});
 
 	it('decrease month', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+		const date = new Date('2000-01-15T02:02:02.002Z'),
 			component = utils.createDatetime({ defaultValue: date });
 
 		expect(component.find('.rdtSwitch').text()).toEqual('January 2000');
@@ -242,7 +245,7 @@ describe('Datetime', () => {
 	});
 
 	it('sets CSS class on days outside of month', () => {
-		const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+		const date = new Date('2000-01-15T02:02:02.002Z'),
 			prevMonthDaysIndexes = [0, 1, 2, 3, 4, 5],
 			nextMonthDaysIndexes = [37, 38, 39, 40, 41],
 			component = utils.createDatetime({ viewMode: 'days', defaultValue: date });
@@ -258,7 +261,7 @@ describe('Datetime', () => {
 	});
 
 	it('selected day persists (in UI) when navigating to prev month', () => {
-		const date = new Date(2000, 0, 3, 2, 2, 2, 2),
+		const date = new Date('2000-01-03T02:02:02.002Z'),
 			component = utils.createDatetime({ viewMode: 'days', defaultValue: date });
 
 		utils.openDatepicker(component);
@@ -287,14 +290,14 @@ describe('Datetime', () => {
 		});
 
 		it('dateFormat', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				component = utils.createDatetime({ value: date, dateFormat: 'M&D' });
 			expect(utils.getInputValue(component)).toEqual(mDate.format('M&D LT'));
 		});
 
 		it('dateFormat=false', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				component = utils.createDatetime({ value: date, dateFormat: false });
 			expect(utils.getInputValue(component)).toEqual(mDate.format('LT'));
@@ -305,7 +308,7 @@ describe('Datetime', () => {
 		});
 
 		it('timeFormat', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				format = 'HH:mm:ss:SSS',
 				component = utils.createDatetime({ value: date, timeFormat: format });
@@ -313,7 +316,7 @@ describe('Datetime', () => {
 		});
 
 		it('timeFormat=false', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				component = utils.createDatetime({ value: date, timeFormat: false });
 			expect(utils.getInputValue(component)).toEqual(mDate.format('L'));
@@ -324,14 +327,14 @@ describe('Datetime', () => {
 		});
 
 		it('timeFormat with lowercase \'am\'', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				format = 'HH:mm:ss:SSS a',
 				component = utils.createDatetime({ value: date, timeFormat: format });
 			expect(utils.getInputValue(component)).toEqual(expect.stringMatching('.*am$'));
 		});
 
 		it('timeFormat with uppercase \'AM\'', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				format = 'HH:mm:ss:SSS A',
 				component = utils.createDatetime({ value: date, timeFormat: format });
 			expect(utils.getInputValue(component)).toEqual(expect.stringMatching('.*AM$'));
@@ -393,7 +396,7 @@ describe('Datetime', () => {
 			let props = {},
 				currentDate = '',
 				selectedDate = '';
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				renderDayFn = (fnProps, current, selected) => {
 					props = fnProps;
@@ -424,7 +427,7 @@ describe('Datetime', () => {
 				month = '',
 				year = '',
 				selectedDate = '';
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				renderMonthFn = (fnProps, fnMonth, fnYear, selected) => {
 					props = fnProps;
@@ -454,7 +457,7 @@ describe('Datetime', () => {
 			let props = {},
 				year = '',
 				selectedDate = '';
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				renderYearFn = (fnProps, fnYear, selected) => {
 					props = fnProps;
@@ -479,7 +482,7 @@ describe('Datetime', () => {
 		});
 
 		it('closeOnTab=true', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ value: date });
 
 			expect(utils.isOpen(component)).toBeFalsy();
@@ -490,7 +493,7 @@ describe('Datetime', () => {
 		});
 
 		it('closeOnTab=false', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ value: date, closeOnTab: false });
 
 			expect(utils.isOpen(component)).toBeFalsy();
@@ -501,7 +504,7 @@ describe('Datetime', () => {
 		});
 
 		it('disableCloseOnClickOutside=true', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ value: date, disableCloseOnClickOutside: true });
 
 			expect(utils.isOpen(component)).toBeFalsy();
@@ -513,7 +516,7 @@ describe('Datetime', () => {
 		});
 
     it('disableCloseOnClickOutside=false', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ value: date, disableCloseOnClickOutside: false });
 
 			expect(utils.isOpen(component)).toBeFalsy();
@@ -526,7 +529,7 @@ describe('Datetime', () => {
 
 		it('increase time', () => {
 			let i = 0;
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ timeFormat: 'HH:mm:ss:SSS', viewMode: 'time',
 					defaultValue: date, onChange: (selected) => {
 						// TODO: Trigger onChange when increasing time
@@ -558,7 +561,7 @@ describe('Datetime', () => {
 
 		it('decrease time', () => {
 			let i = 0;
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ timeFormat: 'HH:mm:ss:SSS', viewMode: 'time',
 					defaultValue: date, onChange: (selected) => {
 						// TODO: Trigger onChange when increasing time
@@ -589,7 +592,7 @@ describe('Datetime', () => {
 		});
 
 		it('long increase time', (done) => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ timeFormat: 'HH:mm:ss:SSS', viewMode: 'time', defaultValue: date });
 
 			utils.increaseHour(component);
@@ -601,7 +604,7 @@ describe('Datetime', () => {
 		});
 
 		it('long decrease time', (done) => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ timeFormat: 'HH:mm:ss:SSS', viewMode: 'time', defaultValue: date });
 
 			utils.decreaseHour(component);
@@ -614,7 +617,7 @@ describe('Datetime', () => {
 
 		it('timeConstraints -> increase time', () => {
 			let i = 0;
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ timeFormat: 'HH:mm:ss:SSS', viewMode: 'time',
 					defaultValue: date, timeConstraints: { hours: { max: 6, step: 8 }, minutes: { step: 15 }},
 					onChange: (selected) => {
@@ -640,7 +643,7 @@ describe('Datetime', () => {
 
 		it('timeConstraints -> decrease time', () => {
 			let i = 0;
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ timeFormat: 'HH:mm:ss:SSS', viewMode: 'time',
 					defaultValue: date, timeConstraints: { minutes: { step: 15 }}, onChange: (selected) => {
 						// TODO
@@ -658,7 +661,7 @@ describe('Datetime', () => {
 		});
 
 		it('strictParsing=true', (done) => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				strDate = mDate.format('L') + ' ' + mDate.format('LT'),
 				invalidStrDate = strDate + 'x',
@@ -672,7 +675,7 @@ describe('Datetime', () => {
 		});
 
 		it('strictParsing=false', (done) => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				strDate = mDate.format('L') + ' ' + mDate.format('LT'),
 				invalidStrDate = strDate + 'x',
@@ -761,7 +764,7 @@ describe('Datetime', () => {
 
 		describe('defaultValue of type', () => {
 			it('date', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					momentDate = moment(date),
 					strDate = momentDate.format('L') + ' ' + momentDate.format('LT'),
 					component = utils.createDatetime({ defaultValue: date });
@@ -769,7 +772,7 @@ describe('Datetime', () => {
 			});
 
 			it('moment', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					momentDate = moment(date),
 					strDate = momentDate.format('L') + ' ' + momentDate.format('LT'),
 					component = utils.createDatetime({ defaultValue: momentDate });
@@ -777,7 +780,7 @@ describe('Datetime', () => {
 			});
 
 			it('string', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					momentDate = moment(date),
 					strDate = momentDate.format('L') + ' ' + momentDate.format('LT'),
 					component = utils.createDatetime({ defaultValue: strDate });
@@ -810,7 +813,7 @@ describe('Datetime', () => {
 
 		describe('being updated and should trigger update', () => {
 			it('dateFormat -> value should change format', (done) => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					component = utils.createDatetime({
 						dateFormat: 'YYYY-MM-DD', timeFormat: false, defaultValue: date
 					});
@@ -830,7 +833,7 @@ describe('Datetime', () => {
 			});
 
 			it('UTC -> value should change format (true->false)', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					momentDate = moment(date),
 					component = utils.createDatetime({ value: momentDate, utc: true });
 
@@ -843,7 +846,9 @@ describe('Datetime', () => {
 			});
 
 			it('UTC -> value should change format (false->true)', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				// For this test, change time zone to not UTC
+				moment.tz.setDefault('Pacific/Auckland');
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					momentDate = moment(date),
 					component = utils.createDatetime({ value: momentDate, utc: false });
 
@@ -856,7 +861,7 @@ describe('Datetime', () => {
 			});
 
 			it('displayTimeZone -> value should change format (undefined->America/New_York)', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					momentDate = moment(date),
 					component = utils.createDatetime({ value: momentDate }),
 					displayTimeZone = (moment.tz.guess() === 'America/New_York' ? 'America/Los_Angeles' : 'America/New_York');
@@ -870,7 +875,7 @@ describe('Datetime', () => {
 			});
 
 			it('displayTimeZone -> value should change format (America/New_York->undefined)', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					momentDate = moment(date),
 					displayTimeZone = (moment.tz.guess() === 'America/New_York' ? 'America/Los_Angeles' : 'America/New_York'),
 					component = utils.createDatetime({ value: momentDate, displayTimeZone: displayTimeZone });
@@ -912,7 +917,7 @@ describe('Datetime', () => {
 	describe('event listeners', () => {
 		describe('onBlur', () => {
 			it('when selecting a date', () => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					onBlurFn = jest.fn(),
 					component = utils.createDatetime({ value: date, onBlur: onBlurFn, closeOnSelect: true });
 
@@ -944,7 +949,7 @@ describe('Datetime', () => {
 		});
 
 		it('onFocus when opening datepicker', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				onFocusFn = jest.fn(),
 				component = utils.createDatetime({ value: date, onFocus: onFocusFn });
 
@@ -1030,7 +1035,7 @@ describe('Datetime', () => {
 			});
 
 			it('when selecting date', (done) => {
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					mDate = moment(date),
 					component = utils.createDatetime({ defaultValue: date, onChange: (selected) => {
 						expect(selected.date()).toEqual(2);
@@ -1044,7 +1049,7 @@ describe('Datetime', () => {
 
 			it('when selecting multiple date in a row', (done) => {
 				let i = 0;
-				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					mDate = moment(date),
 					component = utils.createDatetime({ defaultValue: date, onChange: (selected) => {
 						i++;
@@ -1062,7 +1067,7 @@ describe('Datetime', () => {
 			});
 
 			it('when selecting month', () => {
-				const date = Date.UTC(2000, 0, 15, 2, 2, 2, 2),
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					onChangeFn = jest.fn(),
 					component = utils.createDatetime({ defaultValue: date, dateFormat: 'YYYY-MM', onChange: onChangeFn });
 
@@ -1072,8 +1077,8 @@ describe('Datetime', () => {
 			});
 
 			// Passes locally but not on Travis
-			xit('when selecting year', () => {
-				const date = Date.UTC(2000, 0, 15, 2, 2, 2, 2),
+			it('when selecting year', () => {
+				const date = new Date('2000-01-15T02:02:02.002Z'),
 					onChangeFn = jest.fn(),
 					component = utils.createDatetime({ defaultValue: date, dateFormat: 'YYYY', onChange: onChangeFn });
 
@@ -1153,7 +1158,7 @@ describe('Datetime', () => {
 
 	describe('with set value', () => {
 		it('date value', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				strDate = mDate.format('L') + ' ' + mDate.format('LT'),
 				component = utils.createDatetime({ value: date });
@@ -1161,7 +1166,7 @@ describe('Datetime', () => {
 		});
 
 		it('moment value', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				strDate = mDate.format('L') + ' ' + mDate.format('LT'),
 				component = utils.createDatetime({ value: mDate });
@@ -1169,7 +1174,7 @@ describe('Datetime', () => {
 		});
 
 		it('string value', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				strDate = mDate.format('L') + ' ' + mDate.format('LT'),
 				component = utils.createDatetime({ value: strDate });
@@ -1177,7 +1182,7 @@ describe('Datetime', () => {
 		});
 
 		it('UTC value from local moment', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				momentDate = moment(date),
 				momentDateUTC = moment.utc(date),
 				strDateUTC = momentDateUTC.format('L') + ' ' + momentDateUTC.format('LT'),
@@ -1186,7 +1191,7 @@ describe('Datetime', () => {
 		});
 
 		it('UTC value from UTC moment', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				momentDateUTC = moment.utc(date),
 				strDateUTC = momentDateUTC.format('L') + ' ' + momentDateUTC.format('LT'),
 				component = utils.createDatetime({ value: momentDateUTC, utc: true });
@@ -1194,7 +1199,7 @@ describe('Datetime', () => {
 		});
 
 		it('UTC value from UTC string', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				momentDateUTC = moment.utc(date),
 				strDateUTC = momentDateUTC.format('L') + ' ' + momentDateUTC.format('LT'),
 				component = utils.createDatetime({ value: strDateUTC, utc: true });
@@ -1202,7 +1207,7 @@ describe('Datetime', () => {
 		});
 
 		it('TZ value from local moment', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
         displayTimeZone = 'America/New_York',
 				momentDate = moment(date),
 				momentDateTZ = moment.tz(date, displayTimeZone),
@@ -1212,7 +1217,7 @@ describe('Datetime', () => {
 		});
 
 		it('TZ value from UTC moment', () => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				displayTimeZone = 'America/New_York',
 				momentDateUTC = moment.utc(date),
 				momentDateTZ = moment.tz(date, displayTimeZone),
@@ -1222,7 +1227,7 @@ describe('Datetime', () => {
 		});
 
 		it('invalid string value', (done) => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				strDate = mDate.format('L') + ' ' + mDate.format('LT'),
 				component = utils.createDatetime({ defaultValue: 'invalid-value', onChange: (updated) => {
@@ -1235,7 +1240,7 @@ describe('Datetime', () => {
 		});
 
 		it('delete invalid string value', (done) => {
-			const date = new Date(2000, 0, 15, 2, 2, 2, 2),
+			const date = new Date('2000-01-15T02:02:02.002Z'),
 				component = utils.createDatetime({ defaultValue: date, onChange: (date) => {
 					expect(date).toEqual('');
 					done();
@@ -1246,7 +1251,7 @@ describe('Datetime', () => {
 
 		it('invalid moment object', (done) => {
 			const invalidValue = moment(null),
-				date = new Date(2000, 0, 15, 2, 2, 2, 2),
+				date = new Date('2000-01-15T02:02:02.002Z'),
 				mDate = moment(date),
 				strDate = mDate.format('L') + ' ' + mDate.format('LT'),
 				component = utils.createDatetime({ value: invalidValue, onChange: (updated) => {

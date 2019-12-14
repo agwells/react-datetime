@@ -1,6 +1,7 @@
-/* global it, describe, expect, jest */
+/* global it, describe, expect, jest, beforeAll, afterAll*/
 
 import React from 'react'; // eslint-disable-line no-unused-vars
+import moment from 'moment-timezone';
 import Datetime from '../DateTime.js';
 import renderer from 'react-test-renderer';
 
@@ -13,8 +14,18 @@ jest.mock('react-dom', () => ({
     findDOMNode: () => {},
 }));
 
-// Mock date to get rid of time as a factor to make tests deterministic
-Date.now = jest.fn(() => 1482363367071);
+const realDateNow = Date.now;
+beforeAll(() => {
+    // Mock date to get rid of time as a factor to make tests deterministic
+    Date.now = jest.fn(() => new Date('2016-12-21T11:36:07.071Z').valueOf());
+    // Set a specific timezone so tests won't depend on local environment
+    moment.tz.setDefault('Pacific/Auckland');
+});
+
+afterAll(() => {
+    Date.now = realDateNow;
+    moment.tz.setDefault();
+});
 
 it('everything default: renders correctly', () => {
     const tree = renderer.create(
